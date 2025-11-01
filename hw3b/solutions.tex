@@ -1,0 +1,561 @@
+\documentclass[]{exam}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \makeatletter % undo the wrong changes made by mathspec
+    \let\RequirePackage\original@RequirePackage
+    \let\usepackage\RequirePackage
+    \makeatother
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Homework 3},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+\usepackage{booktabs}
+
+\title{Homework 3}
+
+\input{../preamble.tex}
+\title{Homework 3 Submission}
+
+% Question header formatting
+\qformat{\hfill \textbf{Problem \thequestion} \hfill}
+
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Concat}{Concat}
+\DeclareMathOperator*{\argsup}{arg\,sup}
+\DeclareMathOperator*{\arginf}{arg\,inf}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\indep}{\perp \!\!\! \perp}
+\setcounter{MaxMatrixCols}{20}
+
+\newcommand{\divider}{\line(1,0){\textwidth}}
+
+\allowdisplaybreaks
+
+% Package for enumerated lists using letters
+\usepackage{enumitem}
+
+% Algorithms
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{nicefrac}
+\usepackage{graphicx}
+\usepackage{fancyvrb,fvextra}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+
+%%
+%% Julia definition (c) 2014 Jubobs
+%%
+\lstdefinelanguage{Julia}%
+  {morekeywords={abstract,break,case,catch,const,continue,do,else,elseif,%
+      end,export,false,for,function,immutable,import,importall,if,in,%
+      macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
+      using,while},%
+   sensitive=true,%
+   alsoother={\$},%
+   morecomment=[l]\#,%
+   morecomment=[n]{\#=}{=\#},%
+   morestring=[s]{"}{"},%
+   morestring=[m]{'}{'},%
+}[keywords,comments,strings]%
+
+\lstset{%
+    language         = Julia,
+    basicstyle       = \ttfamily,
+    keywordstyle     = \bfseries\color{blue},
+    stringstyle      = \color{magenta},
+    commentstyle     = \color{ForestGreen},
+	breaklines=true,
+    showstringspaces = false,
+}
+
+\begin{document}
+\maketitle
+
+\hypertarget{problem-0-homework-checklist}{%
+\subsection{Checklist}\label{problem-0-homework-checklist}}
+
+\begin{enumerate}
+	\item Cross-checked independent work with Kunal Kapur.
+	\item No use of AI tools.
+	\item Code is included!
+\end{enumerate}
+
+\begin{questions}
+
+\question
+\hfill
+
+We have:
+\begin{gather*}
+	\mA = \bmat{\mA_1 & \mA_2 \\ \mA_3 & \mA_4}, \quad \vx = \bmat{\vx_1 \\ \vx_2}, \quad \vb = \bmat{\vb_1 \\ \vb_2}
+\end{gather*}
+Which decomposes into the following two systems:
+\begin{gather*}
+	\mA_1\vx_1 + \mA_2 \vx_2 = \vb_1 \\
+	\mA_3\vx_1 + \mA_4 \vx_2 = \vb_2
+\end{gather*}
+We can assume $\vx_2$ given and solve for $\vx_1$:
+\begin{align*}
+	&\vx_1 = \mA_1^{-1} (\vb_1 - \mA_2 \vx_2) \\
+	&\implies \mA_3\mA_1^{-1} (\vb_1 - \mA_2 \vx_2) + \mA_4 \vx_2 = \vb_2 \\
+	&\implies \mA_3\mA_1^{-1} \vb_1 - \mA_3\mA_1^{-1} \mA_2 \vx_2 + \mA_4 \vx_2 = \vb_2 \\
+	&\implies (\mA_4 - \mA_3\mA_1^{-1} \mA_2) \vx_2 = \vb_2 - \mA_3\mA_1^{-1} \vb_1 
+\end{align*}
+
+Now, we have inverses, but we can just recurse on our solver until we have a trivial system.
+	\paragraph{Code}
+	\begin{lstlisting}
+using SparseArrays, LinearAlgebra, Plots
+
+function solve(A::Matrix, B::Matrix)
+	n, k = size(B)
+	factor = div(n, 2)
+
+	if n == 1
+		return B ./ A
+	else
+		A_1 = A[1:factor, 1:factor]
+		A_2 = A[1:factor, end-factor+1:end]
+		A_3 = A[end-factor+1:end, 1:factor]
+		A_4 = A[end-factor+1:end, end-factor+1:end]
+		
+		x_2 = solve(A_4 - A_3 * solve(A_1, A_2), B[end-factor+1:end, :] - A_3 * solve(A_1, B[1:factor, :]))
+		x_1 = solve(A_1, B[1:factor, :] - A_2 * x_2)
+		return vcat(x_1, x_2)
+	end
+end
+
+Z = randn(2^4, 2^4)
+A = Z'Z
+b = ones(size(Z)[1], 1)
+
+x_hat = solve(A, b)
+println(norm(x_hat - A\b))
+	\end{lstlisting}
+	\paragraph{Output}
+	\begin{lstlisting}
+7.166880891681717e-9
+	\end{lstlisting}
+
+\newpage
+\question
+\hfill
+
+\begin{enumerate}[label=\arabic*.]
+	\item Each step of Cholesky Factorization does two things: a) it preserves the symmetry and positive definiteness of a matrix, and b) it reduces the size of the matrix from $n \times n$ to $n - 1 \times n - 1$. This reveals a simple application of induction, given it holds trivially for a $1 \times 1$ case (just the square root of arbitrary input given positive definiteness), we can assume it works for the $k \times k$ case as our inductive hypothesis, and the inductive step reduces a $(k + 1) \times (k + 1)$ case to the $k \times k$ case. We therefore have a Cholesky factorization for any symmetric positive definite matrix of arbitrary dimension.
+	\item The positive definiteness condition states that, for a matrix $\mA$, it holds that:
+		$$ \vx^T \mA \vx > 0 \quad \forall \vx \neq 0 \qquad \mathrm{and} \qquad \vx^T \mA^T \vx > 0 \quad \forall \vx \neq 0$$
+		The second equivalent statement is just the transpose, which holds because the left term is a scalar. We can simplify the statement by adding the two terms to get an equivalent condition:
+		\begin{align*}
+			&\vx^T \mA \vx + \vx^T \mA^T \vx > 0 & \forall \vx \neq 0 \\
+			\iff &(\vx^T \mA + \vx^T \mA^T) \vx > 0 & \forall \vx \neq 0 \\
+			\iff &(\vx^T (\mA + \mA^T)) \vx > 0 & \forall \vx \neq 0 \\
+			\iff &\vx^T (\mA + \mA^T) \vx > 0 & \forall \vx \neq 0
+		\end{align*}
+		This is awesome, because $\mB := \mA + \mA^T$ is a symmetric matrix. Proof:
+		\begin{align*}
+			\mB_{ij} = \sum^n_{k=1} \mA_{i, k} + \mA^T_{k,j} = \sum^n_{k=1} \mA^T_{k, i} + \mA_{j,k} = \mB_{ji} \qquad \forall i,j
+		\end{align*}
+
+		If $\alpha < 0$ in any step of Cholesky factorization of $\mB$, then our matrix $\mB$ is not positive definite, which is an equivalent condition for $\mA$ not being positive definite. This allows us to modify the code from the textbook:
+		\paragraph{Code}
+\begin{lstlisting}[language=julia]
+using SparseArrays, LinearAlgebra
+
+# important: copied and modified from textbook
+function check_definiteness(X::Matrix, check_positive::Bool)  # if check_positive = true, check if positive definite, else check if negative definite
+	A = copy(Float64.(X) + X')
+	if !check_positive
+		A = -A
+	end
+
+	n = size(A,1)
+	F = Matrix(1.0I,n,n)
+	d = zeros(n)
+	for i=1:n-1
+		alpha = A[i,i]
+		if alpha < 0
+			return false
+		end
+		d[i] = sqrt(alpha)
+		F[i+1:end,i] = A[i+1:end,i]/alpha
+		A[i+1:end, i] -= A[i+1:end, i] * A[i, i+1:end]'/alpha
+	end
+	return true
+end
+
+A = randn(10, 10)
+PD = A'*A
+println("Sanity Check 1 (expect true): ", check_definiteness(PD, true))
+println("Sanity Check 2 (expect false): ", check_definiteness(A, true))
+
+
+function map_index(i::Integer, j::Integer, n::Integer)
+	if 1 < i < n+1 && 1 < j < n+1
+		return 4n + (i - 2)*(n-1) + j-1
+	elseif i == 1
+		return j
+	elseif i == n+1
+		return n + 1 + j
+	elseif j == 1
+		return 2(n+1) + i - 1
+	elseif j == n+1
+		return 2(n+1) + n - 2 + i
+	end
+end
+
+function laplacian(n::Integer, f::Function)
+	A = sparse(1I, (n+1)^2, (n+1)^2)
+	A[diagind(A)[4n+1:end]] .= -4
+
+	fvec = zeros((n+1)^2)
+
+	global row_index = 4n + 1
+	for i in 2:n
+		for j in 2:n
+			A[row_index, map_index(i-1, j, n)] = 1
+			A[row_index, map_index(i+1, j, n)] = 1
+			A[row_index, map_index(i, j-1, n)] = 1
+			A[row_index, map_index(i, j+1, n)] = 1
+			fvec[row_index] = f(i, j)
+
+			global row_index += 1
+		end
+	end
+
+	return A, fvec/n^2
+end
+
+n = 10
+A, fv = laplacian(n, (x, y) -> 1)
+println()
+println("Laplacian with boundary conditions (Positive): ", check_definiteness(Matrix(A), true))
+println("Laplacian with boundary conditions (Negative): ", check_definiteness(Matrix(A), false))
+
+A_smol = A[4n+1:end,4n+1:end]
+println()
+println("Laplacian without boundary conditions (Positive): ", check_definiteness(Matrix(A_smol), true))
+println("Laplacian without boundary conditions (Negative): ", check_definiteness(Matrix(A_smol), false))
+\end{lstlisting}
+		\paragraph{Code}
+\begin{lstlisting}
+Sanity Check 1 (expect true): true
+Sanity Check 2 (expect false): false
+
+Laplacian with boundary conditions (Positive): false
+Laplacian with boundary conditions (Negative): false
+
+Laplacian without boundary conditions (Positive): false
+Laplacian without boundary conditions (Negative): true
+\end{lstlisting}
+\end{enumerate}
+Thus we conclude that Poisson's equation from homework 1 \textit{without boundary conditions} is \textbf{negative definite}.
+
+\newpage
+\question
+\hfill
+
+We have:
+\begin{gather*}
+	\mA = \bmat{\alpha_1 & \beta_1 \\ \beta_1 & \alpha_2 & \beta_2 \\ & \ddots & \ddots & \ddots \\ & & \beta_{n-2} & \alpha_{n-1} & \beta_{n-1} \\ & & & \beta_{n-1} & \alpha_n} \\
+\end{gather*}
+
+\begin{enumerate}[label=\arabic*.]
+	\item Since $\mA_{n-1}$ is tridiagonal, we have that:
+		\begin{gather*}
+			(\mA_{n-1})_{ij} = (\mL_{n-1} \mL_{n-1}^T)_{ij} = 0 \qquad \forall i,j : j - 1 \leq i \leq j + 1 \\
+			(\mL_{n-1} \mL_{n-1}^T)_{ij} = \sum^n_{k=1} (\mL_{n-1})_{ik} (\mL_{n-1}^T)_{kj}
+			= \sum^n_{k=1} (\mL_{n-1})_{ik} (\mL_{n-1})_{jk} = \langle \mL_{i, :}, \mL_{j, :} \rangle
+		\end{gather*}
+		Let $[n] = \{1, 2, \ldots, n\}$.
+		Since $\mA_{n-1}$, is positive definite, we have that $(\mA_{n-1})_{ii} > 0~\forall i \in [n-1]$. Therefore,
+		\begin{gather*}
+			(\mA_{n-1})_{ii} = \sum^{n-1}_{k=1} (\mL_{n-1})_{ik}^2 = \| L_{i, :} \|^2_2 > 0 \qquad \forall i \in [n - 1]
+		\end{gather*}
+		For $i=1$, we have:
+		\begin{gather*}
+			(\mA_{n-1})_{11} = \sum^{n-1}_{k=1} (\mL_{n-1})_{1k} (\mL_{n-1})_{k1} = (\mL_{n-1})_{11} (\mL_{n-1})_{11} = (\mL_{n-1})_{11}^2 > 0
+		\end{gather*}
+		Thus $(\mL_{n-1})_{11} > 0$. We can use this to show that $(\mL_{n-1})_{i, j} = 0~\forall i > j + 1$ for $j = 1$:
+		\begin{gather*}
+			(\mA_{n-1})_{i1} = 0 = \langle (\mL_{n-1})_{i, :}, (\mL_{n-1})_{1, :} \rangle = (\mL_{n-1})_{i1} (\mL_{n-1})_{11}
+		\end{gather*}
+		Since $(\mL_{n-1})_{11} > 0$, it must hold that $(\mL_{n-1})_{i1} = 0$. Letting $(\mL_{n-1})_{21}$ remain arbitrary, we've comprehensively characterized the first column. We can extend this to arbitrary columns next.
+
+		\textbf{Inductive Hypothesis:} Given column $k$, $(\mL_{n-1})_{j,j} > 0$ and $(\mL_{n-1})_{i,j} = 0~\forall i > j + 1~\forall j \leq k$.
+
+		\textbf{Inductive Step:} T.P.T.~For column $k+1$, $(\mL_{n-1})_{k+1,k+1} > 0$ and $(\mL_{n-1})_{i,k+1} = 0~\forall i > k + 2$.
+
+		We can use the above result to show that $(\mL_{n-1})_{k + 1, k+1} > 0$:
+		\begin{align*}
+			(\mA_{n-1})_{k+1, k+1} &= \langle (\mL_{n-1})_{k + 1, :}, (\mL_{n-1})_{k + 1, :} \rangle  > 0\\
+			&= \sum^{(k+1)-1}_{l=1} (\mL_{n-1})_{k + 1, l}^2 > 0 \\
+			&= (\mL_{n-1})_{k + 1, k+1}^2 + \sum^{k-1}_{l=1} (\mL_{n-1})_{k + 1, l}^2 > 0 \\
+			&= (\mL_{n-1})_{k + 1, k+1}^2 + 0 > 0 \\
+			(\mA_{n-1})_{k+1, k+1} &= (\mL_{n-1})_{k + 1, k+1}^2 > 0
+		\end{align*}
+
+		Finally, we can show that $(\mL_{n-1})_{i,k + 1} = 0~\forall i > k + 2$:
+		\begin{align*}
+			(\mA_{n-1})_{i, k+1} &= 0 = \langle (\mL_{n-1})_{i, :}, (\mL_{n-1})_{k+1, :} \rangle = 0 + 0 + \ldots + 0 + (\mL_{n-1})_{i, k+1} (\mL_{n-1})_{k+1, k+1}
+		\end{align*}
+		Since $(\mL_{n-1})_{k + 1, k+1} > 0$, it holds that $(\mL_{n-1})_{i, k+1} = 0$.
+
+		Therefore, we have proven that $\mL_{n-1}$ has a non-zero diagonal, and that it is sparse; it is populated only by the diagonal and subdiagonal elements.
+	\item We can setup this question by unpacking a single step of Cholesky Decomposition:
+		\begin{gather*}
+			\mA = \bmat{\alpha_1 & \beta_1 \ve_1^T \\ \beta_1 \ve_1 & \mA_{n - 1}} = \mC \mC^T = \bmat{\gamma & 0 \\ \vc & \mC_{1}} \bmat{\gamma & \vc^T \\ 0 & \mC_{1}^T} = \bmat{\gamma^2 & \gamma \vc^T \\ \gamma \vc & \vc \vc^T + \mC_1 \mC_1^T}
+		\end{gather*}
+		So, we have $\gamma = \sqrt{\alpha},~\vc = (\nicefrac{\beta_1}{\gamma}) \ve_1$. Substituting the given equalities, we have:
+		\begin{gather*}
+			\mA_{n-1} = \mL_{n-1} \mL_{n-1}^T = \vc \vc^T + \mC_1 \mC_1^T = \left(\frac{\beta_1}{\sqrt{\alpha}}\right)^2 \ve_{11} + \mC_1 \mC_1^T \\
+			\implies \mC_1 \mC_1^T = \mL_{n-1} \mL_{n-1}^T - \frac{\beta_1^2}{\alpha_1} \ve_{11}
+		\end{gather*}
+		We need the Cholesky Factorization for the right hand term. We can integrate element subtraction maintaining the sparse structure of $\mL_{n-1}$:
+		\begin{gather*}
+			(\mC_1)_{11}^2 = \langle (\mC_1)_{1, :}, (\mC_1)_{1, :} \rangle = (\mC_1 \mC_1^T)_{11} = \langle (\mL_{n-1})_{1,:}, (\mL_{n-1})_{1,:} \rangle - \frac{\beta_1^2}{\alpha_1} = (\mL_{n-1})_{11}^2 - \frac{\beta_1^2}{\alpha_1} \\
+			\therefore (\mC_1)_{11} = \sqrt{(\mL_{n-1})_{11}^2 - \frac{\beta_1^2}{\alpha_1}}
+		\end{gather*}
+		Here, we only pick the positive solution since we have shown in the previous question that the diagonal elements are each $> 0$. The other element affected by this change is $(\mC_1 \mC_1^T)_{21}$:
+		\begin{gather*}
+			(\mC_1)_{11} (\mC_1)_{21} = \langle (\mC_1)_{1, :}, (\mC_1)_{2, :} \rangle = (\mC_1 \mC_1^T)_{21} = \langle (\mL_{n-1})_{1, :}, (\mL_{n-1})_{2, :} \rangle = (\mL_{n-1})_{11} (\mL_{n-1})_{21} \\
+			\therefore (\mC_1)_{21} = \frac{(\mL_{n-1})_{11} (\mL_{n-1})_{21}}{(\mC_1)_{11}} = \frac{(\mL_{n-1})_{11} (\mL_{n-1})_{21}}{\sqrt{(\mL_{n-1})_{11}^2 - \frac{\beta_1^2}{\alpha_1}}}
+		\end{gather*}
+		The rest of the matrix is unaffected by the single-element change (because we have that $\mC$ is only populated by the diagonal and sub-diagonal, $(\mC_1)_{j1} = 0~\forall j > 2$ and so the dot product breakdown used earlier can ignore $(\mC_1)_{11}$) and is identical to $\mL_{n-1}$. Thus, we have obtained $\gamma, \vc, \mC_1$ which together constitutes the Cholesky factorization of $\mA$ following the first equation.
+	\item We can apply the algorithm mathematically described above using a constant set of operations:
+		\paragraph{Code}
+		\begin{lstlisting}
+function tridiag_cholesky(A::Matrix)
+	L = spzeros(size(A))
+	n, m = size(A)
+
+	if n == 1
+		return sqrt(A)
+	else
+		L[1, 1] = sqrt(A[1, 1])  # set gamma
+		L[2, 1] = A[2, 1] / L[1, 1]  # rest of column vector is already zero
+
+		# recurse till n = 1, and make relevant corrections
+		L_1 = tridiag_cholesky(A[2:end, 2:end])
+		L[2:end, 2:end] = L_1
+		L[2, 2] = sqrt(L_1[1, 1]^2 - L[2, 1]^2)
+		if n > 2
+			L[3, 2] = L_1[1, 1] * L_1[2, 1] / L[2, 2]
+		end
+	end
+
+	return L
+end
+
+A = Tridiagonal(ones(9), Vector(1:10), ones(9))
+F, d = oracle(Matrix(A))
+println("Decomposition Error: ", norm(A - F*F'))
+		\end{lstlisting}
+		\paragraph{Output}
+		\begin{lstlisting}
+Decomposition Error: 2.886579864025407e-15
+		\end{lstlisting}
+		This question is very cool!!
+\end{enumerate}
+
+\newpage
+\question
+\hfill
+
+We have an undetermined linear system $(\mA - \lambda \mI)\vx = 0$. Running our elimination solver on this system results in the final 2x2 system of equations being linearly dependent. This propogates into a divide-by-zero error. For a full-rank system, our solver returns the {\it correct but undesired} trivial solution $\vx = 0$.
+
+\paragraph{Output}
+\begin{lstlisting}
+3-element Vector{Float64}:
+ NaN
+ NaN
+ NaN
+\end{lstlisting}
+
+By fixing a single variable from the solution $\vx_n := 1$, we can simply solve the linear system as normal. $\vx_{:n-1}$ `reacts' to $\vx_n$ and the overall result is an eigenvector.
+
+\paragraph{Code}
+\begin{lstlisting}
+using LinearAlgebra
+
+function solve1_pivot2_fixed(A::Matrix, b::Vector)
+	m,n = size(A)
+	@assert(m==n, "the system is not square")
+	@assert(n==length(b), "vector b has the wrong length")
+	if n==1
+		@show(b)
+		display(A)
+		return [1.]   #  <-- this is the only functional change!
+	else
+		# let's make sure we have an equation
+		# that we can eliminate!
+		# let's try that again, where we pick the
+		# largest magnitude entry!
+		maxval = abs(A[1,1])
+		newrow = 1
+		for j=2:n
+			if abs(A[j,1]) > maxval
+				newrow = j
+				maxval = abs(A[j,1])
+			end
+		end
+		if maxval < eps(1.0)
+			error("the system is singular")
+		end
+		@show newrow
+		# swap rows 1, and newrow
+		if newrow != 1
+			tmp = A[1,:]
+			A[1,:] .= A[newrow,:]
+			A[newrow,:] .= tmp
+			b[1], b[newrow] = b[newrow], b[1]
+		end
+		D = A[2:end,2:end]
+		display(D)
+		c = A[1,2:end]
+		d = A[2:end,1]
+		a = A[1,1]
+		y = solve1_pivot2_fixed(D-d*c'/a, b[2:end]-b[1]/a*d)
+		z = (b[1] - c'*y)/a
+		return pushfirst!(y,z)
+	end
+end
+
+A = [1 2 2; 0 2 1; -1 2 2]
+lambda = 1
+
+Y = A - lambda * I
+b = zeros(size(Y)[1])
+
+println("Valid problem? ", Bool(rank(A) - rank(Y)))
+x_hat = solve1_pivot2_fixed(Y, b)[1:end]
+println("Correct Solution? ", all((A * x_hat) ./ x_hat .== lambda))
+\end{lstlisting}
+
+\paragraph{Output}
+\begin{lstlisting}
+Valid problem? true
+newrow = 3
+2x2 Matrix{Int64}:
+ 1  1
+ 2  2
+newrow = 2
+1x1 Matrix{Float64}:
+ 1.0
+b = [0.0]
+1x1 Matrix{Float64}:
+ 0.0
+Correct Solution? true
+\end{lstlisting}
+
+\newpage
+\question
+\hfill
+
+We have two approaches to producing orthogonalizing $\va$:
+\begin{gather*}
+	\mH \va = \pm \| \va \| \ve_1 = \mG_{n-1} \mG_{n-2} \cdots \mG_1 \va
+\end{gather*}
+
+\textbf{Note:}
+I got confused about how to interpret a `length $n$ vector', because rotations preserve vector length by default, and therefore both parts of this question have an identical answer. From reviewing the lecture, I instead assumed length as number of elements in the vector; this formulation is similar to the class discussion.
+
+\begin{enumerate}[label=\arabic*.]
+	\item For a 2-dimensional vector:
+		\begin{gather*}
+			\mG \va = \bmat{c & s \\ -s & c} \bmat{a_1 \\ a_2} = \bmat{c a_1 + s a_2 \\ -s a_1 + c a_2} = \bmat{\|\va\| \\ 0} \\
+			\therefore c = \frac{a_1}{\| \va \|}, \quad s = \frac{a_2}{\| \va \|}
+		\end{gather*}
+		The orthogonal matrix from the Given's rotation is $\mG^T$:
+		\begin{gather*}
+			\va = \underbrace{\mG^T}_{\mQ} \underbrace{\| \va \| \ve_1}_{\mR}
+			= \bmat{\frac{a_1}{\| \va \|} & -\frac{a_2}{\| \va \|} \\ \frac{a_2}{\| \va \|} & \frac{a_1}{\| \va \|}} \bmat{\|\va\| \\ 0}
+			= \frac{1}{\| \va \|} \bmat{a_1 & -a_2 \\ a_2 & a_1} \bmat{\|\va\| \\ 0}
+		\end{gather*}
+		We can do something similar with Householder transformations:
+		$$
+			\mH = \mI - \frac{2 \vu \vu^T}{\|\vu\|^2_2} \quad \mathrm{where} \quad \vu = \va - \| \va \| \ve_1 = \bmat{a_1 - \|\va\| \\ a_2}
+		$$
+		\begin{align*}
+			\therefore \mH
+			&= \bmat{1 & 0 \\ 0 & 1} - \frac{2}{\vu^T \vu} \bmat{a_1 - \| \va \| \\ a_2} \bmat{a_1 - \| \va \| & a_2} \\
+			&= \bmat{1 & 0 \\ 0 & 1} - \frac{2}{(a_1 - \sqrt{a_1^2 + a_2^2})^2 + a_2^2} \bmat{(a_1 - \| \va \|)^2 & (a_1 - \| \va \|) a_2  \\ (a_1 - \| \va \|) a_2 & a_2^2} \\
+			&= \bmat{1 & 0 \\ 0 & 1} - \frac{2}{2(a_1^2 + + a_2^2 - \sqrt{a_1^2 + a_2^2})} \bmat{(a_1 - \| \va \|)^2 & (a_1 - \| \va \|) a_2  \\ (a_1 - \| \va \|) a_2 & a_2^2} \\
+			&= \bmat{1 & 0 \\ 0 & 1} - \frac{1}{\|\va\|^2 - \|\va\|} \bmat{(a_1 - \| \va \|)^2 & (a_1 - \| \va \|) a_2  \\ (a_1 - \| \va \|) a_2 & a_2^2} \\
+			&= \bmat{1 & 0 \\ 0 & 1} - \frac{1}{\|\va\|(1 - \|\va\|)} \bmat{(a_1 - \| \va \|)^2 & (a_1 - \| \va \|) a_2  \\ (a_1 - \| \va \|) a_2 & a_2^2}
+		\end{align*}
+		The orthogonal matrix from the Householder's rotation is $\mH^T$:
+		\begin{gather*}
+			\va = \underbrace{\mH^T}_{\mQ} \underbrace{\| \va \| \ve_1}_{\mR}
+			= \left( \bmat{1 & 0 \\ 0 & 1} - \frac{1}{\|\va\|(1 - \|\va\|)} \bmat{(a_1 - \| \va \|)^2 & (a_1 - \| \va \|) a_2  \\ (a_1 - \| \va \|) a_2 & a_2^2} \right) \| \va \| \ve_1
+		\end{gather*}
+		$\mQ$ in case of Householder is symmetric, whereas Givens' produces a skew-symmetric matrix.
+	\item For length 3 vectors, we have:
+		\begin{gather*}
+			\mG = \mG_2 \mG_1 = 
+			\begin{pmatrix}c_2&s_2&0\\ -s_2&c_2&0\\ 0&0&1\end{pmatrix}\begin{pmatrix}c_1&0&s_1\\ 0&1&0\\ -s_1&0&c_1\end{pmatrix} = 
+			\begin{pmatrix}c_2c_1&s_2&c_2s_1\\ -c_1s_2&c&-s_2s_1\\ -s_1&0&c_1\end{pmatrix} \\
+				\va = \mG^T \| \va \| \ve_1 = \bmat{c_2 c_1 & -c_1 s_2 & -s_1 \\ s_2 & c & 0 \\ c_2 s_1 & -s_2 s_1 & c_1} \| \va \| \ve_1 
+		\end{gather*}
+		The orthogonal matrix in  this case is slightly sparse, but we can't really take advantage of this because $\mR$ is itself sparse and has a zero in the third index. For the case of Householder, we have:
+		\begin{gather*}
+			\mH = \mI - \frac{2 \vu \vu^T}{\|\vu\|^2_2} \quad \mathrm{where} \quad \vu = \va - \| \va \| \ve_1 = \bmat{a_1 - \|\va\| \\ a_2 \\ a_3} \\
+			\begin{aligned}
+				\therefore \mH
+				&= \bmat{1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1} - \frac{2}{\vu^T \vu} \bmat{a_1 - \| \va \| \\ a_2 \\ a_3} \bmat{a_1 - \| \va \| & a_2 & a_3} \\
+				&= \bmat{1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1} - \frac{2}{\vu^T \vu} \bmat{(a_1 - \| \va \|)^2 & (a_1 - \| \va \|) a_2 & (a_1 - \| \va \|) a_3 \\ (a_1 - \| \va \|) a_2 & a_2^2 & a_2 a_3 \\ (a_1 - \| \va \|) a_3 & a_3 a_2 & a_3^2} \\
+				&= \bmat{1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 1} - \frac{1}{\|\va\|(1 - \|\va\|)} \bmat{(a_1 - \| \va \|)^2 & (a_1 - \| \va \|) a_2 & (a_1 - \| \va \|) a_3 \\ (a_1 - \| \va \|) a_2 & a_2^2 & a_2 a_3 \\ (a_1 - \| \va \|) a_3 & a_3 a_2 & a_3^2}
+			\end{aligned}
+		\end{gather*}
+		This allows us to make two observations: appending additional dimensions to Householder can be cheap, because we need to only add $2n - 1$ elements to a Householder matrix of one fewer dimensions. Further, since norms increase monotonically as the the overall magnitude of the orthogonal matrix is also more likelk y to reduce. If it doesn't, then it is likely that $\va$ is inherently sparse to begin with, and Given's rotations may produce an orthogonal matrix more cheaply.
+\end{enumerate}
+
+\end{questions}
+
+\end{document}

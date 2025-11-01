@@ -49,3 +49,23 @@ end
 p = scatter(alphs, itrs, label="#itr to convergence (or give up at 1000)", xlabel="alpha")
 savefig(p, "q4-1.pdf")
 println(alphs[findall(x-> x == minimum(itrs), itrs)][end])
+
+# failed midterm experimend
+function get_alpha(gamma::Number)
+	return 1 / abs(gamma - 1) - 1e-2
+end
+
+b = ones(2)
+for gamma in 0:.1:10
+	if gamma == 1
+		continue
+	end
+
+	local A = [gamma -1; -1 gamma]
+	local alpha = get_alpha(gamma)
+
+	x_hat, n_iter = richardson(A, b, T_max, alpha, tol)
+	x_true = A \ b
+	println(gamma, ", ", alpha, ", ", x_hat, ", ", n_iter, ", ", norm(A * x_hat - b), ", ", norm(x_true - x_hat))
+end
+
