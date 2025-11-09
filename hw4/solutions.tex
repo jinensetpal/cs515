@@ -1,0 +1,658 @@
+\documentclass[]{exam}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath, amsthm}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+    \makeatletter % undo the wrong changes made by mathspec
+    \let\RequirePackage\original@RequirePackage
+    \let\usepackage\RequirePackage
+    \makeatother
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Homework 3},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+\usepackage{booktabs}
+
+\title{Homework 4}
+
+\input{../preamble.tex}
+\title{Homework 4 Submission}
+
+% Question header formatting
+\qformat{\hfill \textbf{Problem \thequestion} \hfill}
+
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\Concat}{Concat}
+\DeclareMathOperator*{\argsup}{arg\,sup}
+\DeclareMathOperator*{\arginf}{arg\,inf}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\indep}{\perp \!\!\! \perp}
+\setcounter{MaxMatrixCols}{20}
+
+\newcommand{\divider}{\line(1,0){\textwidth}}
+
+\newtheorem{lemma}{Lemma}
+
+\allowdisplaybreaks
+
+% Package for enumerated lists using letters
+\usepackage{enumitem}
+
+% Algorithms
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{nicefrac}
+\usepackage{graphicx}
+\usepackage{fancyvrb,fvextra}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{url}
+
+%%
+%% Julia definition (c) 2014 Jubobs
+%%
+\lstdefinelanguage{Julia}%
+  {morekeywords={abstract,break,case,catch,const,continue,do,else,elseif,%
+      end,export,false,for,function,immutable,import,importall,if,in,%
+      macro,module,otherwise,quote,return,switch,true,try,type,typealias,%
+      using,while},%
+   sensitive=true,%
+   alsoother={\$},%
+   morecomment=[l]\#,%
+   morecomment=[n]{\#=}{=\#},%
+   morestring=[s]{"}{"},%
+   morestring=[m]{'}{'},%
+}[keywords,comments,strings]%
+
+\lstset{%
+    language         = Julia,
+    basicstyle       = \ttfamily,
+    keywordstyle     = \bfseries\color{blue},
+    stringstyle      = \color{magenta},
+    commentstyle     = \color{ForestGreen},
+	breaklines=true,
+    showstringspaces = false,
+}
+
+\begin{document}
+\maketitle
+
+\hypertarget{problem-0-homework-checklist}{%
+\subsection{Checklist}\label{problem-0-homework-checklist}}
+
+\begin{enumerate}[label=\arabic*.]
+	\item Cross-checked independent work with Kunal Kapur.
+	\item No use of AI tools.
+	\item Code is included!
+\end{enumerate}
+
+\begin{questions}
+
+\question
+\hfill
+
+\begin{enumerate}[label=\arabic*.]
+	\item
+		\begin{gather*}
+			\mE = \bmat{\mD & \vu \\ \vv^T & \alpha}, \qquad
+			\mE^{-1} := \bmat{\mX & \vy \\ \vz^T & \beta} \\
+			\mE \mE^{-1} = \bmat{\mD & \vu \\ \vv^T & \alpha} \bmat{\mX & \vy \\ \vz^T & \beta} = \bmat{\mD \mX + \vu \vz^T & \mD \vy + \vu \beta \\ \vv^T \mX + \alpha \vz^T & \vv^T \vy + \alpha \beta} = \bmat{\mI & \mathbf{0} \\ \mathbf{0} & 1}
+			\intertext{Unravelling the blocks, we get:}
+			\begin{aligned}
+				\mD \mX + \vu \vz^T &= \mI \\
+				\vv^T \mX + \alpha \vz^T &= \mathbf{0} \\ 
+				\mD \vy + \vu \beta &= \mathbf{0} \\
+				\vv^T \vy + \alpha \beta &= 1
+			\end{aligned} \\
+			\intertext{We can then solve both these systems of equations to get $\mE^{-1}$ in close form:}
+			\mX = \mD^{-1} (\mI - \vu \vz^T) \\
+			\begin{aligned}
+				\vv^T \mX + \alpha \vz^T &= \mathbf{0} \\ 
+				\vv^T \mD^{-1} (\mI - \vu \vz^T) + \alpha \vz^T &= \mathbf{0} \\ 
+				\vv^T \mD^{-1} - \vv^T \mD^{-1} \vu \vz^T + \alpha \vz^T &= \mathbf{0} \\ 
+				(\alpha - \vv^T \mD^{-1} \vu) \vz^T &= - \vv^T \mD^{-1} \\ 
+				- \frac{\vv^T \mD^{-1}}{\alpha - \vv^T \mD^{-1} \vu} &= \vz^T \\ 
+			\end{aligned} \\
+			\intertext{That sets $\vz^T$.}
+			\mX = \mD^{-1} \left(\mI + \frac{\vu \vv^T \mD^{-1}}{\alpha - \vv^T \mD^{-1} \vu}\right) \\
+			\intertext{That sets $\mX$.}
+			\vy = - \mD^{-1} \vu \beta \\
+			\begin{aligned}
+				\vv^T \vy + \alpha \beta &= 1 \\
+				- \vv^T \mD^{-1} \vu \beta + \alpha \beta &= 1 \\
+				(\alpha - \vv^T \mD^{-1} \vu) \beta &= 1 \\
+				\frac{1}{\alpha - \vv^T \mD^{-1} \vu} &= \beta
+			\end{aligned} \\
+			\intertext{That sets $\beta$.}
+			\vy = - \frac{\mD^{-1} \vu}{\alpha - \vv^T \mD^{-1} \vu} \\
+			\intertext{That sets $\vy$.}
+			\therefore \mE^{-1} = \bmat{\mD^{-1} \left(\mI + \frac{\vu \vv^T \mD^{-1}}{\alpha - \vv^T \mD^{-1} \vu}\right) & - \frac{\mD^{-1} \vu}{\alpha - \vv^T \mD^{-1} \vu} \\ - \frac{\vv^T \mD^{-1}}{\alpha - \vv^T \mD^{-1} \vu} & \frac{1}{\alpha - \vv^T \mD^{-1} \vu}} \\
+			\mE^{-1} \mA = \bmat{\mD^{-1} \left(\mI + \frac{\vu \vv^T \mD^{-1}}{\alpha - \vv^T \mD^{-1} \vu}\right) & - \frac{\mD^{-1} \vu}{\alpha - \vv^T \mD^{-1} \vu} \\ - \frac{\vv^T \mD^{-1}}{\alpha - \vv^T \mD^{-1} \vu} & \frac{1}{\alpha - \vv^T \mD^{-1} \vu}} \bmat{\mA_1 & \va_2 \\ \va_3^T & a_4}
+		\end{gather*}
+
+		Decomposing the algorithm, $\vv^T \mD^{-1},~\mD^{-1} \vu \in \mathcal{O}(n)$, this is just a series of independent multiplications and divisions, $\vv^T (\mD^{-1} \vu)$ is just the inner product $\in \mathcal{O}(n)$ taking the previous result (i.e., never compute a matrix). Thus the bottom-left block, top-right block, and bottom-right block can be computed in $\mathcal{O}(n)$. For the top-left block, we have:
+		\begin{gather*}
+			\mD^{-1} \left(\mI + \frac{\vu \vv^T \mD^{-1}}{\alpha - \vv^T \mD^{-1} \vu} \right) \mA_{1} =
+			\mD^{-1} \left(\mA_{1} + \frac{\vu \vv^T \mD^{-1} \mA_{1}}{\alpha - \vv^T \mD^{-1} \vu} \right) =
+			\underbrace{\overbrace{\mD^{-1} \mA_{1}}^{\mathcal{O}(nc)} + \frac{\overbrace{\overbrace{\mD^{-1} \vu}^{\mathcal{O}(n)} \overbrace{\vv^T \mD^{-1} \mA_{1}}^{\mathcal{O}(n + nc)}}^{\mathcal{O}(nc)}}{\alpha - \vv^T \mD^{-1} \vu}}_{\mathcal{O}(nc)}
+		\end{gather*}
+
+		The first summand is straightforward, given it's a diagonal matrix we are just scaling each row of $\mA_{1}$ by some scalar, we need only one pass over the entire matrix. The first inner product has been justified prior, the next terms are an inner product follower by a vector-matrix product. Then another matrix-vector product to top-off the summand. Finally, both summands are matrices and elementwise addition is another $\mathcal{O}(nc)$ operation. Thus our final FLOP count for this computation is $\mathcal{O}(nc)$.
+	\item Let $\mA,~\mB \in \mathbb{R}^{m \times n}$. Then $\mA^T \mB \in \mathbb{R}^{n \times n}$. We have that $(\mA^T\mB)_{i,j} = \langle \mA_{i, :}, \mB_{j, :} \rangle$ for some indices $i, j$. By definition, $\mathrm{trace}(\mA^T\mB) = \sum^n_{i=1} \langle \mA_{i, :}, \mB_{i, :} \rangle$.
+
+		We can speed up the computation of the inner product by first doing a single scalar multiplication, then running the fused operation until we complete the inner product.
+		\begin{gather*}
+			\vx^T \vy = \underbrace{\underbrace{\vx_1 \vy_1}_{\mathrm{ops} += 1} + \vx_2 \vy_2}_{\mathrm{ops} += 1} + \cdots  + \vx_n \vy_n
+		\end{gather*}
+		So we need $n$ ops to compute a single inner product, need $n$ different inner products and reduce them using $n - 1$ additions. Thus the total $\mathrm{ops} = n^2 + n - 1$.
+\end{enumerate}
+
+\newpage
+\question
+\hfill
+
+\begin{enumerate}[label=\arabic*.]
+	\item IEEE floating point comes with the following useful guarantees:
+		\begin{enumerate}[label=\alph*.]
+			\item $x \oplus y = (x + y) (1 + \delta)$
+			\item $x \otimes y = (x + \delta x) (y + \delta y)$
+		\end{enumerate}
+		Where $\oplus$ and $\otimes$ represent computation addition and multiplication respectively.
+
+		At an intuitive level, $\vx^T \vy$ the inner product is just a series of multiplications and additions. Although the overall accuracy of our computation may deviate as operations increase $\in \mathcal{O}(n)$, it is close at a per operation level, and we can bound our constant as a function of $n$ to bound deviation. Further, the dot product function has a range of real numbers so even if we are off by a lot we can argue that the function output is the dot product of {\it some} $\bar{\vx}, \bar{\vy}$, and consequently that the naive implementation is backwards stable.
+
+		A formal proof proceeds by induction.
+		\paragraph{Base Case.} Let $n = 1$:
+		\begin{gather*}
+			\vx^T \vy = \vx_1 \otimes \vy_1 = (\vx_1 + \delta \vx_1) (\vy_1 + \delta \vy_1)
+		\end{gather*}
+		This is backwards stable on account of being floating point multiplication.
+		\paragraph{Inductive Hypothesis.} $\vx^T\vy$ where $\vx,\vy \in \mathbb{R}^n$ for $n = k$ is backwards stable.
+		\begin{gather*}
+			\vx^T \vy = (\vx (1 + \delta))^T (\vy (1 + \delta)) = \vx^T\vy + 2 \delta \vx^T \vy + \delta^2 \vx^T \vy = \vx^T \vy(1 + 2 \delta + \delta^2)
+		\end{gather*}
+		\paragraph{Inductive Step.} For $n = k + 1$, we have:
+		\begin{align*}
+			\vx^T \vy &= \sum^{k+1}_{i=1} \vx_i \otimes \vy_i
+			= (\vx_{k+1} \otimes \vy_{k+1}) \oplus \sum^{k}_{i=1} \vx_i \otimes \vy_i \\
+			&= [\vx_{k+1} (1 + \delta) \vy_{k+1} (1 + \delta)] \oplus (\vx_{1:k} (1 + \delta))^T (\vy_{1:k} (1 + \delta)) \\
+			&= \left[[\vx_{k+1} (1 + \delta) \vy_{k+1} (1 + \delta)] + (\vx_{1:k} (1 + \delta))^T (\vy_{1:k} (1 + \delta))\right](1 + \delta) \\
+			&= \left[\vx_{k+1} \vy_{k+1} + 2\delta \vx_{k+1} \vy_{k+1} + \delta^2 \vx_{k+1}\vy_{k+1} + \vx_{:k}^T \vy_{:k} + 2 \delta \vx_{:k}^T \vy_{:k} + \delta^2 \vx_{:k}^T \vy_{:k} \right](1 + \delta) \\
+			&= \left[\vx^T \vy + 2\delta \vx^T \vy + \delta^2 \vx^T \vy \right](1 + \delta) \\
+			&= \vx^T \vy + 2\delta \vx^T \vy + \delta^2 \vx^T \vy + \delta \vx^T \vy + 2\delta^2 \vx^T \vy + \delta^3 \vx^T \vy \\
+			&= \vx^T \vy + 3\delta \vx^T \vy + 3\delta^2 \vx^T \vy + \delta^3 \vx^T \vy \\
+			&= \vx^T \vy (1 + 3\delta + 3\delta^2 + \delta^3) \\
+			&= \vx^T \vy (1 + 2\delta + \delta^2 + \delta + 2\delta^2 + \delta^3) \\
+			&= \vx^T \vy (1 + 2\delta + \delta^2) + \delta \vx^T \vy (1 + 2\delta + \delta^2) \\
+			&= (\vx^T + \delta \vx^T) (\vy + \delta \vy) + \delta (\vx^T + \delta \vx^T) (\vy + \delta \vy) \\
+			&= (\vx^T + \delta \vx^T) (\vy + \delta \vy) (1 + \delta)
+		\end{align*}
+	\item Computing $\vy = \mA \vx$ is equivalent to computing dot products of $\mA_{i, :} \vx~\forall i$ and stacking the results together to form a matrix. This concatenation of dot products doesn't incur any precision error (we are just moving data, no operations) therefore the backward stability guarantee from inner products above also holds for matrix-vector products.
+\end{enumerate}
+
+\newpage
+\question
+\hfill
+
+\begin{enumerate}[label=\arabic*.]
+	\item We have the following algorithm:
+		\begin{lstlisting}[language=julia]
+function mysum(x::Vector{Float64})
+	s = zero(Float64)
+	for i=1:length(x)
+		s += x[i]
+	end
+	return s
+end
+		\end{lstlisting}
+		This algorithm is {\it exactly} equivalent to:
+		\begin{lstlisting}[language=julia]
+function mysum(x::Vector{Float64})
+	s = zero(Float64)
+	for i=1:length(x)
+		s += 1 .* x[i]  # line change made here
+	end
+	return s
+end
+		\end{lstlisting}
+		By basically adding a no-op, we can see that \texttt{mysum} is just a special case of dot product -- specifically, \texttt{mysum}$(\vx) = \vx^T \ve$. We know that the naive implementation of dot product is backwards stable from question 2; therefore this algorithm is also backwards stable. This naturally implies that the desired condition $\| \hat{\vx} - \vx \| / \| \vx \| \leq C_n \eps$ is satisifed.
+	\item We can start by unpacking numerical error:
+		\begin{align*}
+			s &= a \oplus b \oplus c \\
+			&= [(a + b)(1 + \delta)] \oplus c \\
+			&= [a + b + \delta a + \delta b] \oplus c \\
+			&= (a + b + \delta a + \delta b + c)(1 + \delta) \\
+			&= a + b + \delta a + \delta b + c + \delta a + \delta b + \delta^2 a + \delta^2 b + \delta c \\
+			&= a + b + c + \underbrace{2 \delta a + 2\delta b + \delta^2 a + \delta^2 b + \delta c}_{\mathrm{error}}
+		\end{align*}
+		We want to minimize error; W.L.O.G.~let $c \geq a, b$, then $2 \delta a, 2 \delta b$ the largest possible scaling of the error term will be minimized. So the ideal permutation is to pick the two smallest numbers and sum them up, and then sum the remaining number.
+	\item The answer to this is pretty much eluded in the point above; for arbitrary $\vx$ we just sort in ascending order and then sum from left to right. We'll test on arithmetic mean, because we can compute the exact answer in closed form.
+		\paragraph{Code}
+		\begin{lstlisting}[language=julia]
+function mystablesum(x::Vector{Float64})
+	x = sort(x)
+	s = zero(Float64)
+	for i=1:length(x)
+		s += x[i]
+	end
+	return s
+end
+
+function oracle(x::Vector{Float64})  # test on arithmetic series
+	return length(x) * (minimum(x) + maximum(x)) / 2
+end
+
+
+x = Vector{Float64}(1e9:-1e1:1)
+println("Original: ", mysum(x))
+println("Permuted: ", mystablesum(x))
+println("Oracle: ", oracle(x))
+		\end{lstlisting}
+		\paragraph{Output}
+		\begin{lstlisting}[language=julia]
+Original: 5.000000057998199e16
+Permuted: 5.000000046002399e16
+Oracle: 5.00000005e16
+		\end{lstlisting}
+		There is a difference, the original is indeed worse than our permuted but on a relative scale, it's not by much.
+	\item Thank you \href{https://en.wikipedia.org/wiki/Kahan_summation_algorithm}{Wikipedia} for the wonderful reference:
+		\paragraph{Code}
+		\begin{lstlisting}[language=julia]
+function kahansum(x::Vector{Float64})
+    s = 0.0
+    c = 0.0
+
+	for i=1:length(x)
+		y = x[i] - c
+		t = s + y
+		c = (t - s) - y
+		s = t
+	end
+
+    return s
+end
+
+x = Vector{Float64}(1e9:-1e1:1)
+println("Original: ", mysum(x))
+println("Permuted: ", mystablesum(x))
+println("Kahan: ", kahansum(x))
+println("Oracle: ", oracle(x))
+		\end{lstlisting}
+		\paragraph{Output}
+		\begin{lstlisting}
+Original: 5.000000057998199e16
+Permuted: 5.000000046002399e16
+Kahan: 5.00000005e16
+Oracle: 5.00000005e16
+		\end{lstlisting}
+		Kahan summation wins and by some margin!
+\end{enumerate}
+
+\newpage
+\question
+\hfill
+
+The overall idea is to implement Bisection, Citardauq and the approach suggested by Lumbric-Vonbrand (S.O.~usernames). Since subtraction of close numbers is ill-conditioned we want can find extreme examples when $4ac \approx 0$; we set $a = c \approx 0$ to achieve this and compare the accuracy of the three approaches.
+
+\paragraph{Code}
+\begin{lstlisting}[language=julia]
+function f(x::Float32, a::Float32, b::Float32, c::Float32)
+	return a*x^2 + b*x + c
+end
+
+function roots(a::Float32, b::Float32, c::Float32)
+	if a > 0
+		# then it's convex, f'(x') = 0, f(x') should be negative
+		if f(-b/(2a), a, b, c) > 0
+			return (NaN, NaN)
+		end
+
+		x_pos = -b/(2a) + maximum([abs(a), abs(1/a), abs(b), abs(1/b), abs(c), abs(1/c)])
+		x_neg = -b/(2a)
+	elseif a == 0  # linear function
+		return (-c/b, NaN)
+	elseif a < 0
+		# then it's concave, f'(x') = 0, f(x') should be positive
+		if f(-b/(2a), a, b, c) < 0
+			return (NaN, NaN)
+		end
+
+		x_neg = -b/(2a) + maximum([abs(a), abs(1/a), abs(b), abs(1/b), abs(c), abs(1/c)])
+		x_pos = -b/(2a)
+	end
+
+	tol = 1e-10
+	max_iter = 100000
+
+	iter = 1
+	root = [NaN, NaN]
+	while iter < max_iter
+		midpoint = (x_pos + x_neg) / 2
+		f_mid = f(midpoint, a, b, c)
+
+		if abs(f_mid) < tol
+			root[1] = midpoint
+		elseif sign(f_mid) == 1
+			x_pos = midpoint
+		elseif sign(f_mid) == -1
+			x_neg = midpoint
+		end
+
+		iter += 1
+	end
+
+	if !isnan(root[1])
+		root[2] = -b/a - root[1]
+	end
+
+	return root
+end
+
+function citardauq(a::Float32, b::Float32, c::Float32)
+	return (2c/(-b + sqrt(b^2 - 4a*c)), 2c/(-b - sqrt(b^2 - 4a*c)))
+end
+
+function lumbric_vonbrand(a::Float32, b::Float32, c::Float32)
+	if b < 0
+		r1 = (- b + sqrt(b^2 - 4a*c)) / 2a
+	elseif b > 0
+		r1 = (- b - sqrt(b^2 - 4a*c)) / 2a
+	else
+		return (sqrt(c/a), -sqrt(c/a))
+	end
+
+	r2 = - b/a - r1
+	return (r1, r2)
+end
+
+# to get extreme examples, we need 4ac \approx = 0, because then b - b \approx 0 will incur floating point errors
+a = Float32(1e-4)
+b = Float32(10 * randn(1)[1])
+c = Float32(1e-4)
+
+sol = lumbric_vonbrand(a, b, c)
+@show(sol)
+@show(f(sol[1], a, b, c))
+@show(f(sol[2], a, b, c))
+
+sol = citardauq(a, b, c)
+@show(sol)
+@show(f(sol[1], a, b, c))
+@show(f(sol[2], a, b, c))
+
+sol = roots(a, b, c)
+@show(sol)
+@show(f(sol[1], a, b, c))
+@show(f(sol[2], a, b, c))
+\end{lstlisting}
+
+\paragraph{Output}
+\begin{lstlisting}[language=julia]
+sol = (8607.079f0, 0.0f0)
+f(sol[1], a, b, c) = 0.0001f0
+f(sol[2], a, b, c) = 0.0001f0
+sol = (0.00011618344f0, 3355.443f0)
+f(sol[1], a, b, c) = 0.0f0
+f(sol[2], a, b, c) = -1762.1565f0
+sol = [NaN, NaN]
+\end{lstlisting}
+
+We can see that the first approach that minimizes catastrophic cancelling does well, especially compared to the other approaches where the well-conditioned computations do well (first root of Citardauq), but ill-conditioned computations get \texttt{NaN} (second root of Citardauq and Bisection).
+
+\newpage
+\question
+\hfill
+
+\begin{enumerate}[label=\arabic*.]
+	\item $H(\vp): (0, 1)^n \rightarrow \mathbb{R}_+$ is differentiable, so we can compute the condition number as:
+		\begin{gather*}
+			\kappa(\vp; H) = \frac{\| \nabla_{\vp} H(\vp) \|}{H(\vp)} \| \vp \|_1
+		\end{gather*}
+		Since $\vp$ is a probability distribution, we have that $\vp \ve^T = 1$, so $\| \vp \|_1 = 1$. We then have:
+		\begin{gather*}
+			\kappa(\vp; H) = \frac{\| \nabla_{\vp} H(\vp) \|}{H(\vp)}
+		\end{gather*}
+		We can compute $\nabla_{\vp} H(\vp)$:
+		\begin{align*}
+			\nabla_{\vp} H(\vp) = - \nabla_{\vp} \sum_{i=1}^n p_i \log p_i 
+			= - \bmat{\frac{\partial p_1 \log p_1}{\partial p_1} + 0 \\ \frac{\partial p_2 \log p_2}{\partial p_2} + 0 \\ \vdots \\ \frac{\partial p_n \log p_n}{\partial p_n} + 0}
+			= - \bmat{1 + \log p_1 \\ 1 + \log p_2 \\ \vdots \\ 1 + \log p_n} 
+			= - (1 + \log (\vp))
+		\end{align*}
+		Which we can plug into the condition number:
+		\begin{gather*}
+			\kappa(\vp; H) = \frac{\| 1 + \log (\vp) \|}{- \sum^n_{i=1} p_i \log p_i}
+		\end{gather*}
+		Consider input $\vp = \bmat{\epsilon & 1 - \epsilon & 0 & 0 & \cdots & 0}$. $\epsilon \rightarrow 0 \implies H(\vp) \rightarrow 0,~\| 1 + \log(\vp) \| \rightarrow \infty$, thus $\epsilon \rightarrow 0 \implies \kappa(\vp; H) \rightarrow \infty$; for such input, entropy is ill-conditioned.
+	\item $f(\va, \vb) = \va^T \vb = \sum^n_{i=1} \va_i \vb_i$ is the dot-product function. We note that $f(\mA, \vx)$ is just a series of dot products applied for each vector partition of $\mA$. So, to obtain the most ill-conditioned input for matrix-vector multiplication, we can find the worst-case dot product and just replicate one of the vectors to form worst-case matrix $\mA$ and set the other vector as $\vx$.
+		\paragraph{Case 1.} $n = 1$. Then, $\mA \in \mathbb{R}^{1 \times m},~\vx \in \mathbb{R}^{1 \times 1}$. \\
+		This is just a set of scalar multiplications which have relative condition number 1; this case is well-conditioned.
+		\paragraph{Case 2.} $n > 1$. \\
+		Now, the dot-product function has summands, which is ill-conditioned when $\va_i \vb_i = - \va_j \vb_j + \epsilon$ for vectors $\va,~\vb$ and indices $i, j$. W.L.O.G.,~assume summands are merged with ordering $\mathcal{I}$. Then, given arbitrary running sum $\bar{\vs}_i$, and arbitrary (e.g., generated at random) summand $\va_{i+1}$, set $\vb_{i+1} = \frac{-\bar{\vs}_i + \epsilon}{\va_i}$. Thus we have constructed an ill-conditioned dot product between vectors $\va, \vb \in \mathbb{R}^{n \times 1}$. Now:
+		\begin{gather*}
+			\mathrm{Let~} \mA := \bmat{\va & \va & \cdots & \va}, \quad \vx = \vb
+		\end{gather*}
+		Matrix-vector product is ill-conditioned for such input.
+	\item Since orthogonal matrices are guaranteed to be invertible, given some $\mQ$, we can obtain an arbitrary pre-activation output $\vh$ by computing the corresponding input as $\vx = \mQ \vh$. To simplify the computation, W.L.O.G., let $\mQ = \mI$ and $\vx \in \mathbb{R}^n$. Thus we only really have to compute the conditioning of softplus:
+		\begin{align*}
+			\kappa(f; \vx, \mQ) = \kappa(f; \vh) &= \frac{\| \nabla_{\vh} f(\vh) \|}{\| f(\vh) \|} \| \vh \| \\
+			&= \frac{\| \nabla_{\vh} \log(1 + \exp(\vh)) \|}{\| \log(1 + \exp(\vh)) \|} \| \vh \| \\
+			&= \frac{\| \frac{\exp(\vh)}{1 + \exp(\vh)} \|}{\| \log(1 + \exp(\vh)) \|} \| \vh \| \\
+			\intertext{The Jacobian of softplus is just sigmoid, which is elementwise bounded at 1:}
+			&\leq \frac{\| \ve \|}{\| \log(1 + \exp(\vh)) \|} \| \vh \| \\
+			&= \frac{n}{\| \log(1 + \exp(\vh)) \|} \| \vh \| \\
+			\intertext{Next, we lower bound the denominator to upper bound the overall term:}
+			&\leq \frac{n}{\| \log(\exp(\vh)) \|} \| \vh \| \\
+			&= \frac{n}{\| \vh \|} \| \vh \| = n \\
+			\therefore \kappa(f; \vx, \mQ) &\leq n
+		\end{align*}
+		Thus $\vy = f(\mQ^T \vx)$ is well-conditioned for small enough $n$.
+\end{enumerate}
+
+\newpage
+\question
+\hfill
+
+Since SVD has reduced and full forms, I'll conveniently formalize the intuitive version first and then decompose the given matrices.
+We have:
+\begin{gather*}
+	\mA \in \mathbb{R}^{n \times m}, \quad \mA\mA^T \in \mathbb{R}^{n \times n}, \quad \mA^T\mA \in \mathbb{R}^{m \times m} \\
+	\mA\mA^T := \mS_L = \underbrace{\mU}_{\in \mathbb{R}^{n \times n}} \Sigma^2 \mU^T, \quad \mA^T\mA := \mS_R = \underbrace{\mV}_{\in \mathbb{R}^{m \times m}} \Sigma^2 \mV^T, \quad \mA = \mU \underbrace{\Sigma}_{\in \mathbb{R}^{n \times m}} \mV^T
+\end{gather*}
+If $n > m$, there are more rows than columns, the leftover rows contain all zero elements. Conversely, if $n < m$ the leftover columns contain all zero elements. Finally, if $n = m$, then it is exactly a diagonal matrix so we don't have any extra rows or columns to account for.
+
+\begin{enumerate}[label=\arabic*.]
+	\item I notice that we have an almost diagonal matrix to start with; we only have to permute columns. Luckily permutation matrices are orthogonal. This gives us the result already and since the identitiy matrix is also orthogonal that can be $\mU$ and we are done.
+		\begin{gather*}
+			\mA = \bmat{0 & -3 \\ 0 & 0} = \bmat{1 & 0 \\ 0 & 1} \bmat{-3 & 0 \\ 0 & 0} \bmat{0 & 1 \\ 1 & 0}
+		\end{gather*}
+	\item For this one, the right singular vectors are low-rank so let's start there:
+		\begin{gather*}
+			\mA = \bmat{-5 & 0 \\ 2 & 0}, \quad
+			\mA^T\mA = \bmat{-5 & 2 \\ 0 & 0} \bmat{-5 & 0 \\ 2 & 0} = \bmat{29 & 0 \\ 0 & 0} =  \mI\bmat{\sqrt{29} & 0 \\ 0 & 0}^2 \mI
+		\end{gather*}
+		So we have $\Sigma \mV^T$ which is great, we can use this to figure out the remaining piece of the puzzle:
+		\begin{align*}
+			\mA &= \mU \Sigma \mV^T \\
+			\bmat{-5 & 0 \\ 2 & 0} &= \mU \bmat{\sqrt{29} & 0 \\ 0 & 0} \mI \\
+			\bmat{-5 & 0 \\ 2 & 0} \bmat{\nicefrac{1}{\sqrt{29}} & 0 \\ 0 & 0} &= \mU \bmat{\sqrt{29} & 0 \\ 0 & 0} \mI \bmat{\nicefrac{1}{\sqrt{29}} & 0 \\ 0 & 0} \\
+			\bmat{-5 & 0 \\ 2 & 0} \bmat{\nicefrac{1}{\sqrt{29}} & 0 \\ 0 & 0} &= \mU \\
+			\bmat{\nicefrac{-5}{\sqrt{29}} & 0 \\ \nicefrac{2}{\sqrt{29}} & 0} &= \mU
+		\end{align*}
+		This is nice, but we are not done yet, because the second column is not a valid eigenvector. Since $\Sigma_{:,2}$ is also a zero vector, we are basically free to set this as anything provided it's orthogonal to our first eigenvector, and has a magnitude of one. Accordingly, we have:
+		\begin{align*}
+			\bmat{\nicefrac{-5}{\sqrt{29}} & \nicefrac{2}{\sqrt{29}}} \bmat{a \\ b} &= 0 \\
+			\frac{-5}{\sqrt{29}}a + \frac{2}{\sqrt{29}}b &= 0 \\
+			\frac{2}{\sqrt{29}}b &= \frac{5}{\sqrt{29}}a \\
+			\intertext{Let $a = 1$, then we have:}
+			b &= \frac{5}{2}
+		\end{align*}
+		$\| \bmat{1 & \nicefrac{5}{2}} \|_2 = \sqrt{1 + \nicefrac{25}{4}} = \nicefrac{\sqrt{29}}{2}$ so we divide $a$ and $b$ to obtain the normalized eigenvector:
+		\begin{align*}
+			\mA &= \mU \Sigma \mV^T \\
+			\bmat{-5 & 0 \\ 2 & 0} &= \bmat{\nicefrac{-5}{\sqrt{29}} & \nicefrac{5}{\sqrt{29}} \\ \nicefrac{2}{\sqrt{29}} & \nicefrac{2}{\sqrt{29}}} \bmat{\sqrt{29} & 0 \\ 0 & 0} \bmat{1 & 0 \\ 0 & 1} \\
+		\end{align*}
+		This gives us the SVD for $\mA$.
+	\item This is a rank 1 matrix, so we should be able to construct this matrix as $\sigma \vu \vv^T$.
+		\begin{gather*}
+			\mA = \bmat{1 & -2 \\ 2 & -4 \\ 0 & 0} \\
+			\mathrm{Let~} \bar{\vu} = \bmat{1 \\ 2 \\ 0}, \quad \bar{\vv}^T = \bmat{1 & -2}
+		\end{gather*}
+		Basically, we just encode the fact that the second row is twice the first and the third row is 0 times the first.
+		Now, we can normalize these two and set the scaling factor as $\sigma := \alpha \gamma$, that gets us the SVD.
+		\begin{gather*}
+			\bar{\vu} = \bmat{1 \\ 2 \\ 0} = \sqrt{5} \bmat{\nicefrac{1}{\sqrt{5}} \\ \nicefrac{2}{\sqrt{5}} \\ 0} = \alpha \vu
+			, \quad
+			\bar{\vv}^T = \bmat{1 & -2} = \sqrt{5} \bmat{\nicefrac{1}{\sqrt{5}} & \nicefrac{-2}{\sqrt{5}}} = \gamma \vv^T \\
+			\therefore \mA = \sigma \vu \vv^T = 5 \bmat{\nicefrac{1}{\sqrt{5}} \\ \nicefrac{2}{\sqrt{5}} \\ 0} \bmat{\nicefrac{1}{\sqrt{5}} & \nicefrac{-2}{\sqrt{5}}}
+		\end{gather*}
+	\item Diagonal matrices are super convenient.
+		\begin{gather*}
+			\mA = \bmat{2 & 0 \\ 0 & 5} = \bmat{1 & 0 \\ 0 & 1} \bmat{2 & 0 \\ 0 & 5} \bmat{1 & 0 \\ 0 & 1}
+		\end{gather*}
+\end{enumerate}
+
+\newpage
+\question
+\hfill
+
+\begin{enumerate}[label=\arabic*.]
+	\item $\tilde{f}(x) = f(x + \delta x)$ where $\delta x \leq C \mu x$ for scalar $x$ is our notion of backward stability. \texttt{myf}$(x) = \sqrt{x + \mu} = \tilde{f}(x + \mu)$ for $f(x) = \sqrt{x}$ exactly satisfies this definition, so \texttt{myf} is backwards stable.
+	\item $\mathcal{X} = \{x \in \mathbb{R}_+: \sqrt{x} = - 10^{16} \mu \} = \emptyset$ therefore \texttt{mysqrt} cannot be backwards stable.
+\end{enumerate}
+
+\newpage
+\question
+\hfill
+
+We have that:
+\begin{gather*}
+	\frac{1}{\kappa(\mA)} = \frac{1}{\| \mA \| \| \mA^{-1} \|} = \min_{\mD} \left\{ \frac{\| \mD \|}{\| \mA \|} : \det(\mA + \mD) = 0 \right\} \iff \frac{1}{\| \mA^{-1} \|} = \| \mD \|
+\end{gather*}
+Where $\mD$ is selected such that it satisfies the required optimization problem.
+
+First, let's look at the SVD of $\mA$:
+\begin{gather*}
+	\mA = \mU \Sigma \mV^T \implies \mA^{-1} = \mV \Sigma^{-1} \mU^T
+\end{gather*}
+For some diagonal matrix \mB, $\det(\mB) = \prod^n_{i=1} \mB_{i,i}$, so the shortest distance to a singular matrix is obtained simply by negating the smallest singular value of $\mA$.
+\begin{gather*}
+	\mathrm{Let~} \mD := \mU \Sigma' \mV^T \qquad \mathrm{where} \qquad \Sigma' = -\sigma_{\min} \mE_{n, n} \\
+	\mathrm{Then,~} \det(\mA + \mD) = \det(\mU (\Sigma + \Sigma') \mV^T) = \det(\mU) \det(\Sigma + \Sigma') \det(\mV^T) = \pm 1 \cdot 0 \cdot \pm 1 = 0 \\
+	\intertext{Since the matrix 2 norm gives us the largest singular value, and our construction of $\mD$ has just one, we have that:}
+	\| \mD \| = \| \mU \Sigma' \mV^T \| = \| \Sigma' \| = |\Sigma'_{n,n}| = \sigma_{\min} \\
+	\intertext{$\Sigma^{-1}$ just inverts each singular value, so the largest singular value of $\mA^{-1}$ is the {\it smallest} singular value of $\mA$:}
+	\| \mA^{-1} \| = \| \mV \Sigma^{-1} \mU^T \| = \| \Sigma^{-1} \| = \left| \frac{1}{\Sigma_{n,n}} \right| = \frac{1}{\sigma_{\min}} = \frac{1}{\| \mD \|}
+\end{gather*}
+This proves the desired statement.
+
+\newpage
+\question
+\hfill
+
+\begin{enumerate}[label=\arabic*.]
+	\item It was interesting to see that $\mathbf{s}_{\mathbf{text}, i} > \mathbf{s}_{\mathbf{random}, i}~\forall i \in \{0, 1, \ldots, d\}$. I tried this multiple times to confirm it wasn't a fluke. In each case, the graph looked about the same, particularly in terms of the double-dropoff. The first drop looks smoother, but is in fact quite a bit more pronounced given it is log-scale. The second one is just the rank of the system, given the singular values in both instances fall to about zero towards the end. $\mathbf{s}_{\mathbf{random}}$ appears to have lower rank than $\mathbf{s}_{\mathbf{text}}$, and accordingly the singular values reach zero earlier. At a broader level though, I am not quite sure what comparing the singular values of the transformation induced by the resultant matrix is indicative of.
+		\paragraph{Code}
+		\begin{lstlisting}[language=julia]
+tokens = read_token_sequence()
+Y = reduce(vcat, [gpt2func(tokens[i], gpt2model) for i in 1:100])
+s_Y = svdvals(Y)
+
+n = size(Y)[1]
+Z = reduce(vcat, [gpt2func(rand(0:50256, length(tokens[i])), gpt2model) for i in 1:100])
+s_Z = svdvals(Z)
+
+p = Plots.plot(s_Y - s_Z, yaxis=:log, ylabel=L"\mathbf{s}_{\mathbf{text}, i} - \mathbf{s}_{\mathbf{random}, i}", xlabel=L"i \in \{0, 1, \ldots, d\}")
+		\end{lstlisting}
+		\paragraph{Output}
+		\begin{figure}[h!]
+			\centering
+			\includegraphics[width=.8\textwidth]{code/q9.pdf}
+		\end{figure}
+	\item The first challenges arises when actually attempting to obtain $\mY$ for all 10,000 sequences. Since the GPT-2 implementation is CPU-only, it takes a long time for the forward pass to complete. We can improve the speed using the \texttt{CUDA.jl} library.
+
+		The next challenge arises when actually attempting to compute the SVD. For $\mY \in \mathbb{R}^{N \times d},~N \gg d$ and it is computationally expensive to compute SVD of such large matrices. We can simplify this by computing the {\it thin} QR decomposition, where $\mR \in \mathbb{R}^{d \times d}$, and then compute the SVD over this smaller matrix. We can then compose $\mQ \mU$ to obtain the new SVD.
+	\item For this problem, I'll start by proving a useful property of orthogonal matrices:
+		\begin{lemma}
+			The matrix multiplication of two orthogonal matrices results in a new orthogonal matrix.
+		\end{lemma}
+		\begin{proof} Let $\mA, \mB$ be two orthogonal matrices. Then, T.P.T:
+			\begin{gather*}
+				\mA^T\mA = \mA\mA^T = \mI = \mB \mB^T = \mB^T \mB,~\det(\mA) = 1 = \det(\mB) \implies (\mA \mB)^T \mA \mB = \mA \mB (\mA \mB)^T = \mI,~\det(\mA \mB) = 1
+				\intertext{First, we prove the transpose being inverse:}
+				\mA \mB (\mA \mB)^T = \mA \mB \mB^T \mA^T = \mA \mI \mA^T = \mA \mA^T = \mI \\
+				(\mA \mB)^T \mA \mB = \mB^T \mA^T \mA \mB = \mB^T \mI \mB = \mB^T \mB = \mI
+				\intertext{And next the determinant:}
+				\det(\mA \mB) = \det(\mA) \det(\mB) = 1 \cdot 1 = 1
+			\end{gather*}
+		\end{proof}
+		Going back to the problem, we have:
+		\begin{gather*}
+			\mE \in \mathbb{R}^{50257 \times 768}, \qquad \mY \in \mathbb{R}^{13226 \times 768} \\
+			\intertext{We can compute the QR decomposition of both these matrices:}
+			\mA = \mY \mE^T = (\mQ_Y \mR_Y) (\mQ_E \mR_E)^T = \mQ_Y \mR_Y \mR_E^T \mQ_E^T
+			\intertext{Then compute the SVD of the middle two matrices:}
+			\mA = \underbrace{\mQ_Y \mU_{R}}_{\mQ_A} \underbrace{\Sigma_R}_{\Sigma_A} \underbrace{\mV^T_R \mQ_E^T}_{\mV^T_A}
+		\end{gather*}
+		This gives us the SVD of $\mA$. 
+
+		\paragraph{Code}
+		\begin{lstlisting}[language=julia]
+Q_E, R_E = qr(Float64.(gpt2model.E))
+Q_Y, R_Y = qr(Float64.(Y))
+
+U_R, S_R, Vt_R = svd(R_Y * R_E')
+
+# SVD of A
+Q_A = Q_Y * U_R
+S_A = diagm(S_R)
+Vt_A = Vt_R * Q_E'
+		\end{lstlisting}
+\end{enumerate}
+
+\end{questions}
+
+\end{document}
